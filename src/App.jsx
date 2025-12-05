@@ -260,10 +260,10 @@ export default function App() {
 
       {/* Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-black z-40 transition-transform duration-700 ease-[0.22,1,0.36,1] ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}
+        className={`fixed inset-0 bg-black z-40 transition-transform duration-700 ease-[0.22,1,0.36,1] overflow-y-auto ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}
         onClick={() => setIsMenuOpen(false)}
       >
-        <div className="h-full flex flex-col items-center justify-center pt-20 gap-8" onClick={(e) => e.stopPropagation()}>
+        <div className="min-h-full w-full bg-black flex flex-col items-center justify-center pt-20 pb-10 gap-8" onClick={(e) => e.stopPropagation()}>
           {['NEWS', 'SCHEDULE', 'PROFILE', 'WORKS', 'BLOG', 'GALLERY'].map((item) => (
             <a
               key={item}
