@@ -93,18 +93,7 @@ const FadeInSection = ({ children, delay = 0 }) => {
   );
 };
 
-const AudioPlayer = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  return (
-    <button
-      onClick={() => setIsPlaying(!isPlaying)}
-      className="fixed bottom-8 left-8 z-50 w-12 h-12 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-sm hover:bg-white/10 transition-all group"
-    >
-      <div className={`absolute inset-0 rounded-full border border-white/40 animate-pulse ${isPlaying ? 'opacity-100' : 'opacity-0'}`} />
-      {isPlaying ? <Pause size={16} /> : <Play size={16} className="ml-1" />}
-    </button>
-  );
-};
+
 
 // Custom Cursor
 const CustomCursor = () => {
@@ -258,7 +247,7 @@ export default function App() {
   return (
     <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-cyan-500/30">
       <CustomCursor />
-      <AudioPlayer />
+
 
       {/* Blog Modal */}
       {selectedPost && (
@@ -463,9 +452,16 @@ export default function App() {
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
 
           <FadeInSection>
-            <div className="relative group bg-cyan-500 transition-all duration-[2000ms]">
+            <div
+              className="relative group bg-cyan-500 transition-all duration-[2000ms]"
+              onContextMenu={(e) => e.preventDefault()}
+            >
               <div className="absolute -top-10 -left-10 w-32 h-32 border-t border-l border-cyan-900/50"></div>
-              <img src={IMAGES.profile1} alt="Profile" className="w-full h-[600px] object-cover grayscale brightness-90 contrast-125 transition-all duration-[2000ms] ease-in-out group-hover:mix-blend-multiply group-hover:opacity-90 group-hover:grayscale-0 cursor-none cursor-hover" />
+              <img
+                src={IMAGES.profile1}
+                alt="Profile"
+                className="w-full h-[600px] object-cover grayscale brightness-90 contrast-125 transition-all duration-[2000ms] ease-in-out group-hover:mix-blend-multiply group-hover:opacity-90 group-hover:grayscale-0 pointer-events-none"
+              />
               <div className="absolute bottom-0 right-0 bg-[#0a0a0a] p-4 border-t border-l border-white/10 z-10">
                 <div className="text-xs text-cyan-200">2003 - 2025</div>
               </div>
