@@ -1,112 +1,9 @@
-import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { client } from '../lib/microcms';
-import { Camera, Video } from 'lucide-react';
 
-// --- 1. Hand Input Component (MediaPipe) ---
-const HandInput = ({ onScroll, active, setCameraStatus }) => {
-    const videoRef = useRef(null);
-    const previousYRef = useRef(null);
-    const isPinchingRef = useRef(false);
-    const [isPinching, setIsPinching] = useState(false);
-
-    useEffect(() => {
-        if (!active) return;
-
-        let hands;
-        let camera;
-
-        const onResults = (results) => {
-            setCameraStatus('active');
-
-            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                const landmarks = results.multiHandLandmarks[0];
-
-                // ピンチ判定 (親指:4 と 人差し指:8 の距離)
-                const thumb = landmarks[4];
-                const index = landmarks[8];
-                const distance = Math.sqrt(Math.pow(thumb.x - index.x, 2) + Math.pow(thumb.y - index.y, 2));
-
-                const pinching = distance < 0.1;
-
-                if (pinching && !isPinchingRef.current) {
-                    previousYRef.current = thumb.y;
-                }
-                isPinchingRef.current = pinching;
-                setIsPinching(pinching);
-
-                if (pinching && previousYRef.current !== null) {
-                    const currentY = thumb.y;
-                    const deltaY = currentY - previousYRef.current;
-                    const sensitivity = 8.0;
-                    onScroll(deltaY * sensitivity);
-                    previousYRef.current = currentY;
-                } else {
-                    previousYRef.current = null;
-                }
-            }
-        };
-
-        const initMediaPipe = async () => {
-            setCameraStatus('loading');
-            try {
-                const { Hands } = await import('@mediapipe/hands');
-                const { Camera: MPCamera } = await import('@mediapipe/camera_utils');
-
-                hands = new Hands({
-                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
-                });
-
-                hands.setOptions({
-                    maxNumHands: 1,
-                    modelComplexity: 0,
-                    minDetectionConfidence: 0.5,
-                    minTrackingConfidence: 0.5,
-                });
-
-                hands.onResults(onResults);
-
-                if (videoRef.current) {
-                    camera = new MPCamera(videoRef.current, {
-                        onFrame: async () => {
-                            if (videoRef.current) await hands.send({ image: videoRef.current });
-                        },
-                        width: 320,
-                        height: 240,
-                        facingMode: 'user'
-                    });
-                    camera.start();
-                }
-            } catch (e) {
-                console.error("MediaPipe Init Error:", e);
-                setCameraStatus('error');
-            }
-        };
-
-        initMediaPipe();
-
-        return () => {
-            if (camera) camera.stop();
-            if (hands) hands.close();
-        };
-    }, [active, onScroll, setCameraStatus]);
-
-    return (
-        <div className={`absolute top-20 right-4 z-50 transition-opacity duration-500 ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-            <div className="relative w-32 h-24 bg-black/50 rounded-lg overflow-hidden border border-white/20">
-                <video ref={videoRef} className="absolute inset-0 w-full h-full object-cover -scale-x-100" playsInline muted />
-                <div className={`absolute top-2 right-2 w-3 h-3 rounded-full transition-all ${isPinching ? 'bg-green-500 shadow-[0_0_10px_#0f0]' : 'bg-red-500'}`} />
-                <div className="absolute bottom-1 w-full text-center text-[8px] text-white/70">
-                    PINCH TO SCROLL
-                </div>
-            </div>
-        </div>
-    );
-};
-
-
-// --- 2. Config & Layout ---
+// コンフィグ
 const CONFIG = {
     count: 12,
     cameraZ: 14,
@@ -114,10 +11,12 @@ const CONFIG = {
     mobileBreakpoint: 768,
 };
 
+// --- 1. Layout Math (The Antigravity Logic) ---
+// レイアウトごとの目標座標を計算する関数
 const getLayoutTarget = (index, total, layoutName, isMobile, scrollVal) => {
     const t = index / total;
     const theta = t * Math.PI * 2;
-    const xMult = isMobile ? 0.6 : 1.0;
+    const xMult = isMobile ? 0.6 : 1.0; // モバイル用縮小係数
 
     let pos = new THREE.Vector3();
     let rot = new THREE.Euler();
@@ -125,12 +24,14 @@ const getLayoutTarget = (index, total, layoutName, isMobile, scrollVal) => {
     switch (layoutName) {
         case 'corridor':
             const spread = isMobile ? 1.8 : 3.0;
+            // Scroll moves items vertically
             pos.set((index % 2 ? 1 : -1) * spread, -index * 3.5 + scrollVal, 0);
             rot.set(0, index % 2 ? -0.2 : 0.2, 0);
             break;
 
         case 'ring':
             const r = isMobile ? 6 : 9;
+            // Scroll rotates the ring
             const ringOffset = scrollVal * 0.2;
             const ringTheta = theta + ringOffset;
             pos.set(Math.cos(ringTheta) * r, 0, Math.sin(ringTheta) * r);
@@ -140,6 +41,7 @@ const getLayoutTarget = (index, total, layoutName, isMobile, scrollVal) => {
         case 'spiral':
             const sr = 4 * xMult;
             const sa = index * 0.6;
+            // Scroll moves spiral vertically
             const spiralY = (index - total / 2) * 1.5 + scrollVal * 0.5;
             pos.set(Math.cos(sa) * sr, spiralY, Math.sin(sa) * sr);
             rot.set(0, -sa, 0);
@@ -147,6 +49,7 @@ const getLayoutTarget = (index, total, layoutName, isMobile, scrollVal) => {
 
         case 'heart':
             const sc = 0.3 * xMult;
+            // Scroll rotates the heart
             const heartOffset = scrollVal * 0.2;
             const heartTheta = theta + heartOffset;
 
@@ -154,6 +57,7 @@ const getLayoutTarget = (index, total, layoutName, isMobile, scrollVal) => {
             const hy = 13 * Math.cos(heartTheta) - 5 * Math.cos(2 * heartTheta) - 2 * Math.cos(3 * heartTheta) - Math.cos(4 * heartTheta);
 
             pos.set(hx * sc, hy * sc, (index - total / 2) * 0.2);
+            // Rotate to face center roughly or just keep front
             rot.set(0, 0, 0);
             break;
 
@@ -164,30 +68,37 @@ const getLayoutTarget = (index, total, layoutName, isMobile, scrollVal) => {
 };
 
 
-// --- 3. 3D Components ---
+// --- 2. Components ---
 
+// 個別の写真コンポーネント (The Floating Photo)
 const Photo = ({ index, total, layout, texture, focusedId, setFocusedId, scrollRef }) => {
     const meshRef = useRef();
     const { size, camera } = useThree();
     const isMobile = size.width < CONFIG.mobileBreakpoint;
     const isFocused = focusedId === index;
 
+    // アスペクト比の計算
     const aspect = texture.image ? texture.image.width / texture.image.height : 1;
     const h = 3.2;
     const w = h * aspect;
 
-    useFrame((state) => {
+    // アニメーションループ (毎フレーム実行)
+    useFrame((state, delta) => {
         if (!meshRef.current) return;
 
+        // A. 目標位置の計算
         let targetPos = new THREE.Vector3();
         let targetRot = new THREE.Euler();
         let targetScale = new THREE.Vector3(1, 1, 1);
 
         if (isFocused) {
+            // --- FOCUS MODE (Antigravity Lock) ---
+            // カメラの目の前に固定
             const dist = CONFIG.focusDist;
             targetPos.set(0, 0, camera.position.z - dist);
             targetRot.set(0, 0, 0);
 
+            // 画面フィット計算
             const vFov = (camera.fov * Math.PI) / 180;
             const visibleHeight = 2 * Math.tan(vFov / 2) * dist;
             const visibleWidth = visibleHeight * (size.width / size.height);
@@ -198,6 +109,8 @@ const Photo = ({ index, total, layout, texture, focusedId, setFocusedId, scrollR
             targetScale.set(s, s, s);
 
         } else {
+            // --- NORMAL MODE (Floating Layout) ---
+            // 現在のスクロール値を取得
             const currentScroll = scrollRef.current;
 
             const L = getLayoutTarget(index, total, layout, isMobile, currentScroll);
@@ -205,23 +118,29 @@ const Photo = ({ index, total, layout, texture, focusedId, setFocusedId, scrollR
             targetPos.copy(L.pos);
             targetRot.copy(L.rot);
 
+            // ★ Antigravity Effect (浮遊感)
             const time = state.clock.elapsedTime;
             targetPos.y += Math.sin(time * 2 + index) * 0.1;
             targetRot.z += Math.cos(time + index) * 0.02;
 
+            // ★ Parallax Effect (マウス/タッチ連動)
             const px = state.pointer.x;
             const py = state.pointer.y;
 
+            // 位置のパララックス (少し動く)
             targetPos.x += px * 0.5;
             targetPos.y += py * 0.5;
 
+            // 回転のパララックス (傾く)
             targetRot.x -= py * 0.2;
             targetRot.y += px * 0.2;
         }
 
+        // B. Lerp (滑らかな補間)
         const smooth = isFocused ? 0.15 : 0.08;
         meshRef.current.position.lerp(targetPos, smooth);
 
+        // EulerのLerpは手動で行う
         meshRef.current.rotation.x += (targetRot.x - meshRef.current.rotation.x) * smooth;
         meshRef.current.rotation.y += (targetRot.y - meshRef.current.rotation.y) * smooth;
         meshRef.current.rotation.z += (targetRot.z - meshRef.current.rotation.z) * smooth;
@@ -258,7 +177,8 @@ const Photo = ({ index, total, layout, texture, focusedId, setFocusedId, scrollR
     );
 };
 
-const Particles = () => {
+// パーティクルシステム
+const Particles = ({ count = 1000 }) => {
     const { size } = useThree();
     const isMobile = size.width < CONFIG.mobileBreakpoint;
     const num = isMobile ? 600 : 1500;
@@ -303,6 +223,7 @@ const Particles = () => {
     );
 };
 
+// 背景の暗幕 (Focus時に背景を隠す)
 const Blackout = ({ active }) => {
     const ref = useRef();
     const { camera } = useThree();
@@ -325,6 +246,7 @@ const Blackout = ({ active }) => {
     );
 }
 
+// メインシーン
 const Scene = ({ layout, textures, focusedId, setFocusedId, scrollRef }) => {
     return (
         <>
@@ -354,24 +276,20 @@ const Scene = ({ layout, textures, focusedId, setFocusedId, scrollRef }) => {
     );
 };
 
-// --- 4. Main Component ---
+// --- 3. App Entry ---
 
 export default function ThreeGallery() {
     const [layout, setLayout] = useState('corridor');
     const [textures, setTextures] = useState([]);
     const [focusedId, setFocusedId] = useState(null);
 
-    // Hand Camera Control
-    const [useCamera, setUseCamera] = useState(false);
-    const [cameraStatus, setCameraStatus] = useState('idle');
-
-    // Refs
+    // Scroll State using Ref for performance & momentum
     const scrollRef = useRef(0);
     const velocityRef = useRef(0);
     const isDraggingRef = useRef(false);
     const lastYRef = useRef(0);
 
-    // Load images from microCMS
+    // microCMSから画像をロード
     useEffect(() => {
         const fetchImages = async () => {
             try {
@@ -404,12 +322,16 @@ export default function ThreeGallery() {
         let anim;
         const loop = () => {
             if (!isDraggingRef.current) {
+                // Auto-scroll (Default Animation)
                 const autoSpeed = 0.005;
                 scrollRef.current += autoSpeed;
 
+                // Apply momentum
                 scrollRef.current += velocityRef.current;
+                // Friction
                 velocityRef.current *= 0.95;
 
+                // Stop if very slow
                 if (Math.abs(velocityRef.current) < 0.001) {
                     velocityRef.current = 0;
                 }
@@ -420,23 +342,13 @@ export default function ThreeGallery() {
         return () => cancelAnimationFrame(anim);
     }, []);
 
-    // Hand Scroll Callback
-    const handleHandScroll = useCallback((delta) => {
-        scrollRef.current += delta;
-        velocityRef.current = delta;
-
-        isDraggingRef.current = true;
-        if (window.handDragTimeout) clearTimeout(window.handDragTimeout);
-        window.handDragTimeout = setTimeout(() => {
-            isDraggingRef.current = false;
-        }, 100);
-    }, []);
-
-    // Mouse/Touch Handlers
+    // Event Handlers
     const handleWheel = (e) => {
         if (focusedId !== null) return;
+        // Adjust sensitivity based on layout
         const sensitivity = layout === 'ring' || layout === 'heart' ? 0.005 : 0.02;
         velocityRef.current += e.deltaY * sensitivity;
+        // Limit max velocity
         velocityRef.current = Math.max(Math.min(velocityRef.current, 0.5), -0.5);
     };
 
@@ -444,7 +356,7 @@ export default function ThreeGallery() {
         if (focusedId !== null) return;
         isDraggingRef.current = true;
         lastYRef.current = e.touches[0].clientY;
-        velocityRef.current = 0;
+        velocityRef.current = 0; // Reset velocity on grab
     };
 
     const handleTouchMove = (e) => {
@@ -453,9 +365,11 @@ export default function ThreeGallery() {
         const deltaY = lastYRef.current - currentY;
         lastYRef.current = currentY;
 
+        // Adjust sensitivity
         const sensitivity = layout === 'ring' || layout === 'heart' ? 0.01 : 0.05;
         scrollRef.current += deltaY * sensitivity;
 
+        // Store velocity for release
         velocityRef.current = deltaY * sensitivity;
     };
 
@@ -471,37 +385,6 @@ export default function ThreeGallery() {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
         >
-            {/* Camera Toggle Button */}
-            <button
-                onClick={() => setUseCamera(!useCamera)}
-                className={`absolute top-4 right-4 z-40 p-3 rounded-full backdrop-blur-md transition-all border ${useCamera
-                        ? 'bg-blue-500/20 border-blue-400 text-blue-200'
-                        : 'bg-white/10 border-white/20 text-white/50 hover:bg-white/20'
-                    }`}
-                title={useCamera ? 'カメラOFF' : 'ハンドジェスチャーON'}
-            >
-                {useCamera ? <Video size={20} /> : <Camera size={20} />}
-            </button>
-
-            {/* Hand Controller */}
-            <HandInput
-                active={useCamera}
-                onScroll={handleHandScroll}
-                setCameraStatus={setCameraStatus}
-            />
-
-            {/* Camera Status Indicator */}
-            {useCamera && cameraStatus === 'loading' && (
-                <div className="absolute top-20 right-4 z-50 text-xs text-white/50 bg-black/50 px-3 py-2 rounded">
-                    カメラ準備中...
-                </div>
-            )}
-            {useCamera && cameraStatus === 'error' && (
-                <div className="absolute top-20 right-4 z-50 text-xs text-red-400 bg-black/50 px-3 py-2 rounded">
-                    カメラエラー
-                </div>
-            )}
-
             {/* Layout Buttons */}
             <div style={{ position: 'absolute', bottom: 30, left: 0, width: '100%', zIndex: 10, display: focusedId !== null ? 'none' : 'flex', justifyContent: 'center', gap: '15px' }}>
                 {['corridor', 'heart', 'ring', 'spiral'].map(l => (
