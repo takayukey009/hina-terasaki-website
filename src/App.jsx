@@ -301,8 +301,8 @@ export default function App() {
                 <span className="transition-colors duration-300 md:duration-[2000ms] hover:text-[#fff700] active:text-[#fff700]">HINA</span><br /><span className="transition-colors duration-300 md:duration-[2000ms] hover:text-cyan-200 active:text-cyan-200">TERASAKI</span>
               </h1>
               <p className="text-sm md:text-base text-gray-300 tracking-widest font-light opacity-80">
-                透明な囁きから、デスボイスまで。<br />
-                感じ取れ、温度を感じ取る。
+                静寂を歌い、情熱を刻む。<br />
+                揺さぶる音の温度差。
               </p>
             </div>
           </FadeInSection>
