@@ -12,9 +12,9 @@ const IMAGES = {
 };
 
 const DEMO_TRACKS = [
-  { title: "NO-JEM", subtitle: "TikTokでウン万再生されたHOUSE系Hiphopトラック", label: "DEMO TRACK", file: "/audio/nojem.wav" },
-  { title: "NEVER DIE", subtitle: "寺崎ヒナ(カッコ)", label: "DEMO TRACK", file: "/audio/NEVERDIE.wav" },
-  { title: "My Sweet Memorie = 即死", subtitle: "寺崎ヒナ(ラップ)", label: "DEMO TRACK", file: "/audio/MySweetMemorie.wav" },
+  { title: "NO-JEM", subtitle: "猫ちゃんの曲", label: "DEMO TRACK", file: "/audio/nojem.wav" },
+  { title: "NEVER DIE", subtitle: "決して死なない", label: "DEMO TRACK", file: "/audio/NEVERDIE.wav" },
+  { title: "My Sweet Memorie = 即死", subtitle: "死ねボケ", label: "DEMO TRACK", file: "/audio/MySweetMemorie.wav" },
 ];
 
 
