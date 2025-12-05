@@ -146,6 +146,7 @@ export default function App() {
   const [scheduleItems, setScheduleItems] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [visiblePosts, setVisiblePosts] = useState(5);
+  const [visibleBlogPosts, setVisibleBlogPosts] = useState(4);
   const [loading, setLoading] = useState(true);
 
   // Audio Playback State
@@ -200,7 +201,11 @@ export default function App() {
   }, []);
 
   const handleLoadMore = () => {
-    setVisiblePosts(prev => prev + 4);
+    setVisiblePosts(prev => prev + 5);
+  };
+
+  const handleLoadMoreBlog = () => {
+    setVisibleBlogPosts(prev => prev + 4);
   };
 
   // Combine News and Blog for the News Section
@@ -579,7 +584,7 @@ export default function App() {
           </FadeInSection>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {blogPosts.slice(0, visiblePosts).map((post, i) => (
+            {blogPosts.slice(0, visibleBlogPosts).map((post, i) => (
               <FadeInSection key={post.id} delay={i * 100}>
                 <div
                   className="group bg-[#111] border border-white/5 hover:border-cyan-500/30 transition-all duration-300 cursor-pointer h-full flex flex-col active:scale-95"
@@ -640,17 +645,19 @@ export default function App() {
             ))}
           </div>
 
-          {blogPosts.length > visiblePosts && (
+          {visibleBlogPosts < blogPosts.length && (
             <div className="mt-12 text-center">
               <button
-                onClick={handleLoadMore}
-                className="px-8 py-3 border border-white/20 hover:bg-white/10 transition-colors text-sm tracking-widest"
+                onClick={handleLoadMoreBlog}
+                className="inline-block text-xs tracking-[0.2em] border-b border-white/30 pb-1 hover:text-cyan-200 hover:border-cyan-200 transition-colors"
               >
-                VIEW MORE
+                VIEW ALL
               </button>
             </div>
           )}
         </div>
+
+
       </section >
 
       {/* --- GALLERY Section --- */}
