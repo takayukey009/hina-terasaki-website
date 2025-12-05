@@ -422,7 +422,7 @@ export default function App() {
 
           <FadeInSection>
             <div
-              className="relative group bg-cyan-500 transition-all duration-[2000ms]"
+              className="relative group bg-cyan-500 transition-all duration-[2000ms] film-grain"
               onContextMenu={(e) => e.preventDefault()}
             >
               <div className="absolute -top-10 -left-10 w-32 h-32 border-t border-l border-cyan-900/50"></div>
