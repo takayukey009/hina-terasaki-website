@@ -145,7 +145,7 @@ export default function App() {
   const [newsItems, setNewsItems] = useState([]);
   const [scheduleItems, setScheduleItems] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [visiblePosts, setVisiblePosts] = useState(4);
+  const [visiblePosts, setVisiblePosts] = useState(5);
   const [loading, setLoading] = useState(true);
 
   // Audio Playback State
@@ -229,7 +229,7 @@ export default function App() {
       title: `【LIVE】${item.event}`,
       isSchedule: true
     }))
-  ].sort((a, b) => b.rawDate - a.rawDate).slice(0, 5);
+  ].sort((a, b) => b.rawDate - a.rawDate).slice(0, visiblePosts);
 
 
   return (
@@ -363,14 +363,22 @@ export default function App() {
               </FadeInSection>
             ))}
           </div>
-          <div className="mt-12 text-center">
-            <a href="#" className="inline-block text-xs tracking-[0.2em] border-b border-white/30 pb-1 hover:text-cyan-200 hover:border-cyan-200 transition-colors">VIEW ALL</a>
-          </div>
+
+          {(visiblePosts < (newsItems.length + blogPosts.length + scheduleItems.length)) && (
+            <div className="mt-12 text-center">
+              <button
+                onClick={handleLoadMore}
+                className="inline-block text-xs tracking-[0.2em] border-b border-white/30 pb-1 hover:text-cyan-200 hover:border-cyan-200 transition-colors"
+              >
+                VIEW ALL
+              </button>
+            </div>
+          )}
         </div>
-      </section>
+      </section >
 
       {/* --- SCHEDULE Section --- */}
-      <section id="schedule" className="py-24 px-6 md:px-20 bg-[#0f0f0f] border-t border-white/5">
+      < section id="schedule" className="py-24 px-6 md:px-20 bg-[#0f0f0f] border-t border-white/5" >
         <div className="max-w-5xl mx-auto">
           <FadeInSection>
             <h2 className="text-3xl font-serif mb-12 text-center tracking-widest">SCHEDULE</h2>
@@ -439,10 +447,10 @@ export default function App() {
             )}
           </div>
         </div>
-      </section>
+      </section >
 
       {/* --- Profile / Philosophy Section --- */}
-      <section id="profile" className="py-24 px-6 md:px-20 relative bg-[#0a0a0a]">
+      < section id="profile" className="py-24 px-6 md:px-20 relative bg-[#0a0a0a]" >
         <div className="max-w-7xl mx-auto mb-16">
           <FadeInSection>
             <h2 className="text-3xl font-serif text-center tracking-widest">PROFILE</h2>
@@ -491,10 +499,10 @@ export default function App() {
             </div>
           </FadeInSection>
         </div>
-      </section>
+      </section >
 
       {/* --- WORKS Section --- */}
-      <section id="works" className="py-24 px-6 md:px-20 bg-[#050505]">
+      < section id="works" className="py-24 px-6 md:px-20 bg-[#050505]" >
         <div className="max-w-7xl mx-auto">
           <FadeInSection>
             <h2 className="text-3xl font-serif mb-16 text-center tracking-widest">WORKS</h2>
@@ -560,11 +568,11 @@ export default function App() {
             </FadeInSection>
           </div>
         </div>
-      </section>
+      </section >
 
 
       {/* --- BLOG Section --- */}
-      <section id="blog" className="py-24 px-6 md:px-20 bg-[#0a0a0a] border-t border-white/5">
+      < section id="blog" className="py-24 px-6 md:px-20 bg-[#0a0a0a] border-t border-white/5" >
         <div className="max-w-6xl mx-auto">
           <FadeInSection>
             <h2 className="text-3xl font-serif mb-16 text-center tracking-widest">BLOG</h2>
@@ -643,19 +651,19 @@ export default function App() {
             </div>
           )}
         </div>
-      </section>
+      </section >
 
       {/* --- GALLERY Section --- */}
-      <section id="gallery" className="h-screen w-full relative bg-black overflow-hidden">
+      < section id="gallery" className="h-screen w-full relative bg-black overflow-hidden" >
         <div className="absolute top-10 left-0 w-full z-10 text-center pointer-events-none">
           <h2 className="text-3xl font-serif tracking-widest text-white/80 mix-blend-difference">GALLERY</h2>
           <p className="text-xs text-gray-400 mt-2 tracking-widest">SCROLL / DRAG TO EXPLORE</p>
         </div>
         <ThreeGallery />
-      </section>
+      </section >
 
       {/* --- Footer --- */}
-      <footer className="py-20 px-6 bg-black text-center border-t border-white/10">
+      < footer className="py-20 px-6 bg-black text-center border-t border-white/10" >
         <div className="mb-8 flex justify-center gap-6">
           <a href="https://www.instagram.com/hina.terasaki/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
             <Instagram size={18} />
@@ -679,8 +687,8 @@ export default function App() {
           CONTACT
         </a>
         <div className="text-[10px] text-gray-600 tracking-widest">© 2025 HINA TERASAKI OFFICIAL.</div>
-      </footer>
+      </footer >
 
-    </div>
+    </div >
   );
 }
