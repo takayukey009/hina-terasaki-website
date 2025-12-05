@@ -460,7 +460,8 @@ export default function App() {
               <img
                 src={IMAGES.profile1}
                 alt="Profile"
-                className="w-full h-[600px] object-cover grayscale brightness-90 contrast-125 transition-all duration-[2000ms] ease-in-out group-hover:mix-blend-multiply group-hover:opacity-90 group-hover:grayscale-0 pointer-events-none"
+                className="w-full h-[600px] object-cover grayscale brightness-90 contrast-125 transition-all duration-[2000ms] ease-in-out group-hover:mix-blend-multiply group-hover:opacity-90 group-hover:grayscale-0 group-active:mix-blend-multiply group-active:opacity-90 group-active:grayscale-0"
+                onContextMenu={(e) => e.preventDefault()}
               />
               <div className="absolute bottom-0 right-0 bg-[#0a0a0a] p-4 border-t border-l border-white/10 z-10">
                 <div className="text-xs text-cyan-200">2003 - 2025</div>
