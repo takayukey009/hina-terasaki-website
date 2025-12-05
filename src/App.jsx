@@ -392,24 +392,34 @@ export default function App() {
                         </p>
                       </div>
                       <div className="md:w-32 flex justify-end">
-                        {item.ticketStatus && item.ticketStatus[0] === 'ON SALE' ? (
-                          item.ticketUrl ? (
-                            <a
-                              href={item.ticketUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-6 py-2 border border-cyan-500/50 text-cyan-200 text-xs tracking-widest hover:bg-cyan-500/20 transition-colors inline-block animate-pulse"
-                            >
-                              TICKET
-                            </a>
-                          ) : (
-                            <button className="px-6 py-2 border border-cyan-500/50 text-cyan-200 text-xs tracking-widest hover:bg-cyan-500/20 transition-colors animate-pulse">TICKET</button>
-                          )
-                        ) : item.ticketStatus && item.ticketStatus[0] === 'SOLD OUT' ? (
-                          <span className="text-xs tracking-widest text-gray-600 line-through">SOLD OUT</span>
-                        ) : item.ticketStatus && item.ticketStatus[0] === 'COMING SOON' ? (
-                          <span className="text-xs tracking-widest text-gray-400">COMING SOON</span>
-                        ) : null}
+                        {(() => {
+                          const status = Array.isArray(item.ticketStatus) ? item.ticketStatus[0] : item.ticketStatus;
+
+                          if (status === 'ON SALE') {
+                            return item.ticketUrl ? (
+                              <a
+                                href={item.ticketUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-6 py-2 border border-cyan-500/50 text-cyan-200 text-xs tracking-widest hover:bg-cyan-500/20 transition-colors inline-block animate-pulse"
+                              >
+                                TICKET
+                              </a>
+                            ) : (
+                              <button className="px-6 py-2 border border-cyan-500/50 text-cyan-200 text-xs tracking-widest hover:bg-cyan-500/20 transition-colors animate-pulse">TICKET</button>
+                            );
+                          }
+
+                          if (status === 'SOLD OUT') {
+                            return <span className="text-xs tracking-widest text-gray-600 line-through">SOLD OUT</span>;
+                          }
+
+                          if (status === 'COMING SOON') {
+                            return <span className="text-xs tracking-widest text-gray-400">COMING SOON</span>;
+                          }
+
+                          return null;
+                        })()}
                       </div>
                     </div>
                   </div>
