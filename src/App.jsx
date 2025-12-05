@@ -17,56 +17,7 @@ const DEMO_TRACKS = [
   { title: "My Sweet Memorie = 即死", subtitle: "寺崎ヒナ(ラップ)", label: "DEMO TRACK", file: "/audio/MySweetMemorie.wav" },
 ];
 
-// --- Google Sheets Hook ---
-const useGoogleSheets = (sheetUrl) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!sheetUrl) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(sheetUrl);
-        if (!response.ok) throw new Error('データの取得に失敗しました');
-
-        const text = await response.text();
-        const rows = text.split('\n').slice(1);
-
-        const parsedData = rows
-          .filter(row => row.trim())
-          .map(row => {
-            const cols = row.split(',').map(col => col.replace(/^"|"$/g, '').trim());
-            return {
-              date: cols[0] || '',
-              time: cols[1] || '',
-              event: cols[2] || '',
-              venue: cols[3] || '',
-              ticket: cols[4] || '',
-              ticketurl: cols[5] || ''
-            };
-          });
-
-        setData(parsedData);
-        setError(null);
-      } catch (err) {
-        console.error('Google Sheets fetch error:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [sheetUrl]);
-
-  return { data, loading, error };
-};
 
 // --- Components ---
 
@@ -140,13 +91,12 @@ const BlogModal = ({ post, onClose }) => {
           </button>
 
           {post.thumbnail && (
-            <div className="w-full h-64 md:h-96 relative">
+            <div className="w-full bg-black flex justify-center">
               <img
                 src={post.thumbnail.url}
                 alt={post.title}
-                className="w-full h-full object-cover"
+                className="w-full h-auto max-h-[60vh] object-contain"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
             </div>
           )}
 
@@ -192,8 +142,11 @@ const BlogModal = ({ post, onClose }) => {
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState([]);
+  const [newsItems, setNewsItems] = useState([]);
+  const [scheduleItems, setScheduleItems] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [visiblePosts, setVisiblePosts] = useState(4);
+  const [loading, setLoading] = useState(true);
 
   // Audio Playback State
   const audioRef = useRef(null);
@@ -223,26 +176,53 @@ export default function App() {
     }
   };
 
-  // Schedule Data from Google Sheets
-  const SCHEDULE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_cBT4Un7Tzz4Zjn186ClSR1-0TLKfY5EQSlOTXu8IZZbR_iiZFN3hJ8TfbVx0bAqrYiizlkGGZgC0/pub?gid=0&single=true&output=csv';
-  const { data: scheduleData, loading: scheduleLoading, error: scheduleError } = useGoogleSheets(SCHEDULE_SHEET_URL);
-
-  // Fetch Blog Data
+  // Fetch Data from microCMS
   useEffect(() => {
-    const fetchBlog = async () => {
+    const fetchData = async () => {
       try {
-        const data = await client.get({ endpoint: 'blog', queries: { limit: 100 } });
-        setBlogPosts(data.contents);
+        setLoading(true);
+        const [blogData, newsData, scheduleData] = await Promise.all([
+          client.get({ endpoint: 'blog', queries: { limit: 100 } }),
+          client.get({ endpoint: 'news', queries: { limit: 100 } }),
+          client.get({ endpoint: 'schedule', queries: { limit: 100, orders: 'date' } })
+        ]);
+
+        setBlogPosts(blogData.contents);
+        setNewsItems(newsData.contents);
+        setScheduleItems(scheduleData.contents);
       } catch (error) {
-        console.error("Error fetching blog:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchBlog();
+    fetchData();
   }, []);
 
   const handleLoadMore = () => {
     setVisiblePosts(prev => prev + 4);
   };
+
+  // Combine News and Blog for the News Section
+  const combinedNews = [
+    ...newsItems.map(item => ({
+      date: new Date(item.date).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.'),
+      rawDate: new Date(item.date),
+      cat: item.category ? item.category[0] : 'INFO', // Assuming category is an array or string
+      title: item.title,
+      link: item.link,
+      isBlog: false
+    })),
+    ...blogPosts.map(post => ({
+      date: new Date(post.publishedAt).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.'),
+      rawDate: new Date(post.publishedAt),
+      cat: post.author === 'hina' ? 'BLOG (HINA)' : 'BLOG (STAFF)',
+      title: post.title,
+      isBlog: true,
+      post: post
+    }))
+  ].sort((a, b) => b.rawDate - a.rawDate).slice(0, 5);
+
 
   return (
     <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-cyan-500/30">
@@ -335,30 +315,14 @@ export default function App() {
             <h2 className="text-3xl font-serif mb-12 text-center tracking-widest">NEWS</h2>
           </FadeInSection>
           <div className="space-y-8">
-            {[
-              { date: '2025.12.01', cat: 'RELEASE', title: 'New Single "Echoes of Silence" Release' },
-              { date: '2025.11.20', cat: 'LIVE', title: 'Live Performance at Shibuya O-EAST' },
-              { date: '2025.11.15', cat: 'INFO', title: 'Official Website Renewal Open' },
-              ...blogPosts.map(post => ({
-                date: new Date(post.publishedAt).toLocaleDateString('ja-JP', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit'
-                }).replace(/\//g, '.'),
-                cat: post.author === 'hina' ? 'BLOG (HINA)' : 'BLOG (STAFF)',
-                title: post.title,
-                isBlog: true,
-                post: post
-              }))
-            ].sort((a, b) => {
-              const dateA = new Date(a.date.replace(/\./g, '-'));
-              const dateB = new Date(b.date.replace(/\./g, '-'));
-              return dateB - dateA;
-            }).slice(0, 5).map((item, i) => (
+            {combinedNews.map((item, i) => (
               <FadeInSection key={i} delay={i * 100}>
                 <div
                   className="group flex flex-col md:flex-row md:items-center border-b border-white/10 pb-4 hover:border-cyan-500/50 transition-colors cursor-pointer"
-                  onClick={() => item.isBlog && setSelectedPost(item.post)}
+                  onClick={() => {
+                    if (item.isBlog) setSelectedPost(item.post);
+                    else if (item.link) window.open(item.link, '_blank');
+                  }}
                 >
                   <div className="flex items-center gap-4 mb-2 md:mb-0 md:w-48">
                     <span className="text-sm text-gray-400 font-mono">{item.date}</span>
@@ -393,17 +357,19 @@ export default function App() {
           </FadeInSection>
 
           <div className="grid gap-6">
-            {scheduleLoading ? (
+            {loading ? (
               <div className="text-center py-12 text-gray-400">読み込み中...</div>
-            ) : scheduleError ? (
-              <div className="text-center py-12 text-red-400">データの読み込みに失敗しました</div>
+            ) : scheduleItems.length === 0 ? (
+              <div className="text-center py-12 text-gray-400">予定されているスケジュールはありません</div>
             ) : (
-              scheduleData.map((item, i) => (
+              scheduleItems.map((item, i) => (
                 <FadeInSection key={i} delay={i * 100}>
                   <div className="group relative bg-white/5 border border-white/5 p-6 hover:bg-white/10 transition-all duration-500">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="flex flex-col md:w-1/4">
-                        <span className="text-2xl font-serif text-cyan-200">{item.date}</span>
+                        <span className="text-2xl font-serif text-cyan-200">
+                          {new Date(item.date).toLocaleDateString('ja-JP').replace(/\//g, '.')}
+                        </span>
                         {item.time && <span className="text-sm text-gray-400">{item.time}</span>}
                       </div>
                       <div className="flex-1">
@@ -414,10 +380,10 @@ export default function App() {
                         </p>
                       </div>
                       <div className="md:w-32 flex justify-end">
-                        {item.ticket === 'ON SALE' ? (
-                          item.ticketurl ? (
+                        {item.ticketStatus && item.ticketStatus[0] === 'ON SALE' ? (
+                          item.ticketUrl ? (
                             <a
-                              href={item.ticketurl}
+                              href={item.ticketUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-6 py-2 border border-cyan-500/50 text-cyan-200 text-xs tracking-widest hover:bg-cyan-500/20 transition-colors inline-block animate-pulse"
@@ -427,9 +393,9 @@ export default function App() {
                           ) : (
                             <button className="px-6 py-2 border border-cyan-500/50 text-cyan-200 text-xs tracking-widest hover:bg-cyan-500/20 transition-colors animate-pulse">TICKET</button>
                           )
-                        ) : item.ticket === 'SOLD OUT' ? (
+                        ) : item.ticketStatus && item.ticketStatus[0] === 'SOLD OUT' ? (
                           <span className="text-xs tracking-widest text-gray-600 line-through">SOLD OUT</span>
-                        ) : item.ticket === 'COMING SOON' ? (
+                        ) : item.ticketStatus && item.ticketStatus[0] === 'COMING SOON' ? (
                           <span className="text-xs tracking-widest text-gray-400">COMING SOON</span>
                         ) : null}
                       </div>
