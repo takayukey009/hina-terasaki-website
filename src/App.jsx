@@ -280,7 +280,7 @@ export default function App() {
           <img
             src={IMAGES.hero}
             alt="Hero"
-            className="w-full h-full object-cover opacity-60 scale-105 animate-[pulse_8s_ease-in-out_infinite]"
+            className="w-full h-full object-cover opacity-60 animate-ken-burns"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#050505]"></div>
         </div>
