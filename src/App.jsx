@@ -204,11 +204,12 @@ export default function App() {
   };
 
   // Combine News and Blog for the News Section
+  // Combine News and Blog for the News Section
   const combinedNews = [
     ...newsItems.map(item => ({
       date: new Date(item.date).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.'),
       rawDate: new Date(item.date),
-      cat: item.category ? item.category[0] : 'INFO', // Assuming category is an array or string
+      cat: item.category ? item.category[0] : 'INFO',
       title: item.title,
       link: item.link,
       isBlog: false
@@ -220,6 +221,13 @@ export default function App() {
       title: post.title,
       isBlog: true,
       post: post
+    })),
+    ...scheduleItems.map(item => ({
+      date: new Date(item.publishedAt).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.'),
+      rawDate: new Date(item.publishedAt),
+      cat: 'SCHEDULE',
+      title: `【LIVE】${item.event}`,
+      isSchedule: true
     }))
   ].sort((a, b) => b.rawDate - a.rawDate).slice(0, 5);
 
@@ -324,6 +332,7 @@ export default function App() {
                   className="group flex flex-col md:flex-row md:items-center border-b border-white/10 pb-4 hover:border-cyan-500/50 transition-colors cursor-pointer"
                   onClick={() => {
                     if (item.isBlog) setSelectedPost(item.post);
+                    else if (item.isSchedule) document.getElementById('schedule').scrollIntoView({ behavior: 'smooth' });
                     else if (item.link) window.open(item.link, '_blank');
                   }}
                 >
