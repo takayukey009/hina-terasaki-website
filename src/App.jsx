@@ -260,11 +260,11 @@ export default function App() {
             </a>
           ))}
           <div className="mt-12 flex gap-8">
-            <a href="#" className="text-gray-500 hover:text-white transition-colors"><Instagram size={24} /></a>
-            <a href="#" className="text-gray-500 hover:text-white transition-colors"><Twitter size={24} /></a>
-            <a href="#" className="text-gray-500 hover:text-white transition-colors">
-              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+            <a href="https://www.instagram.com/hina.terasaki/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors"><Instagram size={24} /></a>
+            <a href="https://x.com/hina_terasaki_" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors"><Twitter size={24} /></a>
+            <a href="https://www.tiktok.com/@hina.terasaki" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="none">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
               </svg>
             </a>
           </div>
@@ -625,15 +625,15 @@ export default function App() {
       {/* --- Footer --- */}
       <footer className="py-20 px-6 bg-black text-center border-t border-white/10">
         <div className="mb-8 flex justify-center gap-6">
-          <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+          <a href="https://www.instagram.com/hina.terasaki/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
             <Instagram size={18} />
           </a>
-          <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+          <a href="https://x.com/hina_terasaki_" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
             <Twitter size={18} />
           </a>
-          <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+          <a href="https://www.tiktok.com/@hina.terasaki" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="none">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
             </svg>
           </a>
         </div>
