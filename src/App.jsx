@@ -401,12 +401,15 @@ export default function App() {
                       </div>
                       <div className="md:w-32 flex justify-end">
                         {(() => {
-                          const status = Array.isArray(item.ticketStatus) ? item.ticketStatus[0] : item.ticketStatus;
+                          const rawStatus = item.ticket_status || item.ticketStatus;
+                          const url = item.ticket_url || item.ticketUrl;
+
+                          const status = Array.isArray(rawStatus) ? rawStatus[0] : rawStatus;
 
                           if (status === 'ON SALE') {
-                            return item.ticketUrl ? (
+                            return url ? (
                               <a
-                                href={item.ticketUrl}
+                                href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="px-6 py-2 border border-cyan-500/50 text-cyan-200 text-xs tracking-widest hover:bg-cyan-500/20 transition-colors inline-block animate-pulse"
