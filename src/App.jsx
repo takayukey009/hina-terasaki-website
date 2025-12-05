@@ -279,6 +279,14 @@ export default function App() {
               </svg>
             </a>
           </div>
+          <a
+            href="https://terasakihina.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 text-xs text-gray-600 hover:text-white transition-colors tracking-widest"
+          >
+            CONTACT
+          </a>
         </div>
       </div>
 
@@ -659,7 +667,15 @@ export default function App() {
             </svg>
           </a>
         </div>
-        <div className="text-2xl font-serif tracking-[0.2em] mb-4">HINA TERASAKI</div>
+        <div className="text-2xl font-serif tracking-[0.2em] mb-8">HINA TERASAKI</div>
+        <a
+          href="https://terasakihina.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[10px] text-gray-600 hover:text-white transition-colors tracking-widest mb-4 block"
+        >
+          CONTACT
+        </a>
         <div className="text-[10px] text-gray-600 tracking-widest">© 2025 HINA TERASAKI OFFICIAL.</div>
       </footer>
 
