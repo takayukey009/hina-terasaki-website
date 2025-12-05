@@ -263,7 +263,7 @@ export default function App() {
         className={`fixed inset-0 bg-black z-40 transition-transform duration-700 ease-[0.22,1,0.36,1] ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}
         onClick={() => setIsMenuOpen(false)}
       >
-        <div className="h-full flex flex-col items-center justify-start pt-52 gap-8" onClick={(e) => e.stopPropagation()}>
+        <div className="h-full flex flex-col items-center justify-center pt-20 gap-8" onClick={(e) => e.stopPropagation()}>
           {['NEWS', 'SCHEDULE', 'PROFILE', 'WORKS', 'BLOG', 'GALLERY'].map((item) => (
             <a
               key={item}
