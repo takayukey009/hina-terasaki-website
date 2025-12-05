@@ -235,11 +235,11 @@ export default function App() {
       )}
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-40 px-6 py-6 flex justify-between items-center mix-blend-difference">
-        <div className="text-xl font-serif tracking-[0.2em] z-50">HINA TERASAKI</div>
+      <nav className="fixed top-0 w-full z-50 px-6 py-6 flex justify-between items-center mix-blend-difference">
+        <div className="text-xl font-serif tracking-[0.2em]">HINA TERASAKI</div>
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="z-50 w-10 h-10 flex items-center justify-center hover:opacity-70 transition-opacity"
+          className="w-10 h-10 flex items-center justify-center hover:opacity-70 transition-opacity"
         >
           {isMenuOpen ? <X /> : <Menu />}
         </button>
