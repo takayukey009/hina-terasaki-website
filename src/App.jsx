@@ -251,7 +251,12 @@ export default function App() {
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 px-6 py-6 flex justify-between items-center mix-blend-difference">
-        <div className={`text-xl font-serif tracking-[0.2em] transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>HINA TERASAKI</div>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={`text-xl font-serif tracking-[0.2em] transition-opacity duration-300 hover:opacity-70 cursor-pointer ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}
+        >
+          HINA TERASAKI
+        </button>
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="w-10 h-10 flex items-center justify-center hover:opacity-70 transition-opacity"
