@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, Play, Pause, ArrowUpRight, Music, Instagram, Twitter } from 'lucide-react';
 import { client } from './lib/microcms';
 import ThreeGallery from './components/ThreeGallery';
+import SpotlightCard from './components/SpotlightCard';
+import VelocityText from './components/VelocityText';
 
 // --- Assets & Data ---
 const IMAGES = {
@@ -311,7 +313,7 @@ export default function App() {
             <div className="border-l border-white/50 pl-6 md:pl-8">
               <h2 className="text-xs md:text-sm tracking-[0.4em] text-white mb-4 uppercase">Singer Songwriter / Creator</h2>
               <h1 className="text-5xl md:text-8xl font-serif font-thin tracking-wide mb-6 leading-none">
-                <span className="transition-colors duration-300 md:duration-[2000ms] hover:text-[#fff700] active:text-[#fff700]">HINA</span><br /><span className="transition-colors duration-300 md:duration-[2000ms] hover:text-cyan-200 active:text-cyan-200">TERASAKI</span>
+                <VelocityText className="transition-colors duration-300 md:duration-[2000ms] hover:text-[#fff700] active:text-[#fff700]">HINA</VelocityText><br /><VelocityText className="transition-colors duration-300 md:duration-[2000ms] hover:text-cyan-200 active:text-cyan-200">TERASAKI</VelocityText>
               </h1>
               <p className="text-sm md:text-base text-gray-300 tracking-widest font-light opacity-80">
                 静寂を歌い、情熱を刻む。<br />
@@ -341,8 +343,8 @@ export default function App() {
           <div className="space-y-8">
             {combinedNews.map((item, i) => (
               <FadeInSection key={i} delay={i * 100}>
-                <div
-                  className="group flex flex-col md:flex-row md:items-center border-b border-white/10 pb-4 hover:border-cyan-500/50 transition-colors cursor-pointer"
+                <SpotlightCard
+                  className="group flex flex-col md:flex-row md:items-center p-4 transition-colors cursor-pointer mb-4"
                   onClick={() => {
                     if (item.isBlog) setSelectedPost(item.post);
                     else if (item.isSchedule) document.getElementById('schedule').scrollIntoView({ behavior: 'smooth' });
@@ -364,7 +366,7 @@ export default function App() {
                   <div className="hidden md:block opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
                     <ArrowUpRight size={18} className="text-cyan-200" />
                   </div>
-                </div>
+                </SpotlightCard>
               </FadeInSection>
             ))}
           </div>
@@ -397,7 +399,7 @@ export default function App() {
             ) : (
               scheduleItems.map((item, i) => (
                 <FadeInSection key={i} delay={i * 100}>
-                  <div className="group relative bg-white/5 border border-white/5 p-6 hover:bg-white/10 transition-all duration-500">
+                  <SpotlightCard className="group relative p-6 transition-all duration-500">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="flex flex-col md:w-1/4">
                         <span className="text-2xl font-serif text-cyan-200">
@@ -446,7 +448,7 @@ export default function App() {
                         })()}
                       </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
                 </FadeInSection>
               ))
             )}
@@ -518,7 +520,7 @@ export default function App() {
             <div className="space-y-6">
               {DEMO_TRACKS.map((track, i) => (
                 <FadeInSection key={i} delay={i * 100}>
-                  <div className="group bg-white/5 border border-white/10 p-6 hover:bg-white/10 hover:border-cyan-500/30 transition-all duration-300 cursor-pointer">
+                  <SpotlightCard className="group p-6 transition-all duration-300 cursor-pointer">
                     <div className="flex items-start justify-between mb-3">
                       <div className="text-xs text-cyan-500 tracking-widest">{track.label}</div>
                       <div className="flex gap-3">
@@ -556,7 +558,7 @@ export default function App() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </SpotlightCard>
                 </FadeInSection>
               ))}
             </div>
@@ -586,8 +588,8 @@ export default function App() {
           <div className="grid md:grid-cols-2 gap-6">
             {blogPosts.slice(0, visibleBlogPosts).map((post, i) => (
               <FadeInSection key={post.id} delay={i * 100}>
-                <div
-                  className="group bg-[#111] border border-white/5 hover:border-cyan-500/30 transition-all duration-300 cursor-pointer h-full flex flex-col active:scale-95"
+                <SpotlightCard
+                  className="group transition-all duration-300 cursor-pointer h-full flex flex-col active:scale-95"
                   onClick={() => setSelectedPost(post)}
                 >
                   <div className="aspect-video overflow-hidden bg-gray-900 relative group-hover:opacity-90 transition-opacity">
@@ -640,7 +642,7 @@ export default function App() {
                       READ MORE <ArrowUpRight size={12} />
                     </div>
                   </div>
-                </div>
+                </SpotlightCard>
               </FadeInSection>
             ))}
           </div>
