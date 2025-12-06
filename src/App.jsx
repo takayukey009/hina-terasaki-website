@@ -14,9 +14,9 @@ const IMAGES = {
 };
 
 const DEMO_TRACKS = [
-  { title: "NO-JEM", subtitle: "猫ちゃんの曲", label: "DEMO TRACK", file: "/audio/nojem.wav" },
-  { title: "NEVER DIE", subtitle: "決して死なない", label: "DEMO TRACK", file: "/audio/NEVERDIE.wav" },
-  { title: "My Sweet Memorie = 即死", subtitle: "死ねボケ", label: "DEMO TRACK", file: "/audio/MySweetMemorie.wav" },
+  { title: "NO-JEM", subtitle: "猫ちゃんの曲", label: "DEMO TRACK", file: "/audio/nojem.mp3" },
+  { title: "NEVER DIE", subtitle: "決して死なない", label: "DEMO TRACK", file: "/audio/NEVERDIE.mp3" },
+  { title: "My Sweet Memorie = 即死", subtitle: "死ねボケ", label: "DEMO TRACK", file: "/audio/MySweetMemorie.mp3" },
 ];
 
 
